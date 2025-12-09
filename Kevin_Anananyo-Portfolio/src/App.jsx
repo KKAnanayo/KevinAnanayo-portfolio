@@ -26,9 +26,8 @@ function App() {
     Frontend: ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React', 'Vite', 'Material UI', 'Tailwind CSS'],
     Backend: ['Node.js', 'Express', 'Python', 'Java', 'C#', '.NET', 'REST'],
     Databases: ['MongoDB', 'MySQL', 'MariaDB', 'Firebase'],
-    'DevOps / Cloud': ['Ubuntu', 'Bash', 'Azure', 'GitHub', 'Git', 'RabbitMQ', 'WordPress'],
-    'Developer Tools': ['VS Code', 'Visual Studio', 'Postman', 'Eclipse', 'Android Studio'],
-    'CMS & No-Code': ['WordPress'],
+    'DevOps / Cloud': ['Ubuntu', 'Bash', 'Azure',  'RabbitMQ', 'WordPress'],
+    'Developer Tools': ['VS Code', 'Visual Studio', 'Postman', 'GitHub', 'Git', 'Eclipse', 'Android Studio'],
   }
 
   const experience = [
