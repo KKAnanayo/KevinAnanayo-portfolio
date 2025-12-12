@@ -40,7 +40,7 @@ function App() {
     {
       title: 'VAWCARE',
       description: 'A Progressive Web Application (PWA) developed to support barangay-level efforts in preventing and responding to Violence Against Women and Children (VAWC) cases.',
-      link: '#'
+      link: 'https://vawcare-app.vercel.app/'
     }
   ]
 
