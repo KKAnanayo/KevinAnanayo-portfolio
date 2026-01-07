@@ -28,9 +28,9 @@ function App() {
 
   const projects = [
     {
-      title: 'Analytics Dashboard',
-      description: 'Real-time analytics platform with interactive data visualization and reporting capabilities.',
-      link: '#'
+      title: 'Mrs. Bakers',
+      description: 'A web application for Mrs. Bakers Restaurant and Pastry Shop',
+      link: 'https://github.com/KKAnanayo/SofEng-Final-Project'
     },
     {
       title: 'ITBYTES',
