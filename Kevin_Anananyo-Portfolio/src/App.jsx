@@ -29,7 +29,7 @@ function App() {
   const projects = [
     {
       title: 'Mrs. Bakers',
-      description: 'A web application for Mrs. Bakers Restaurant and Pastry Shop',
+      description: 'A web application for Mrs. Bakers Restaurant and Pastry Shop.',
       link: 'https://github.com/KKAnanayo/SofEng-Final-Project'
     },
     {
