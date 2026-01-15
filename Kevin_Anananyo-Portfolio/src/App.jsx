@@ -4,7 +4,7 @@ import { LinkedinOutlined, GithubOutlined, InstagramOutlined } from '@ant-design
 
 function App() {
   const techStack = {
-    Frontend: ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React', 'Vite', 'Material UI', 'Tailwind CSS'],
+    Frontend: ['JavaScript', 'JSX', 'HTML', 'CSS', 'React', 'Vite', 'Material UI', 'Tailwind CSS'],
     Backend: ['Node.js', 'Express', 'Python', 'Java', 'C#', '.NET', 'REST'],
     Databases: ['MongoDB', 'MySQL', 'MariaDB', 'Firebase'],
     'DevOps / Cloud': ['Ubuntu', 'Bash', 'Azure', 'GitHub', 'Git', 'RabbitMQ', 'WordPress'],
@@ -79,7 +79,7 @@ function App() {
             A results-driven Full-Stack Developer with hands-on experience in both Rapid Application Development (RAD) and Agile methodologies. Proficient in modern development tools such as Jira for project tracking and Notion for documentation.
           </p>
           <p className="section-text">
-            Adept at building scalable and efficient web applications using React, Node.js, TypeScript, and Vite. Strong focus on delivering seamless user experiences through UI/UX enhancements while ensuring robust backend performance to support enterprise-grade solutions.
+            Adept at building scalable and efficient web applications using React, Node.js, JSX, and Vite. Strong focus on delivering seamless user experiences through UI/UX enhancements while ensuring robust backend performance to support enterprise-grade solutions.
           </p>
         </section>
 
