@@ -11,21 +11,6 @@ function App() {
     'Developer Tools': ['VS Code', 'Visual Studio', 'Postman', 'Eclipse', 'Android Studio'],
   }
 
-  const experience = [
-    {
-      period: 'Dec 2023 - Present',
-      title: 'Junior Software Engineer',
-      company: 'Tech Company',
-      description: 'Building scalable web applications with React and Node.js.',
-    },
-    {
-      period: 'Jun 2023 - Aug 2023',
-      title: 'Technical Consultant',
-      company: 'Innovation Lab',
-      description: 'Provided technical guidance and mentorship.',
-    },
-  ]
-
   const projects = [
     {
       title: 'Mrs. Bakers',
