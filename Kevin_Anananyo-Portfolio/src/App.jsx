@@ -11,6 +11,10 @@ function App() {
     'Developer Tools': ['VS Code', 'Visual Studio', 'Postman', 'Eclipse', 'Android Studio'],
   }
 
+  const experience = [
+      
+  ]
+
   const projects = [
     {
       title: 'Mrs. Bakers',
