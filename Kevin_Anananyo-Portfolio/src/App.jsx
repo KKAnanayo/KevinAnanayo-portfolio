@@ -227,10 +227,10 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  /* Lock body scroll when modal is open */
+  /* Lock body scroll when modal or mobile menu is open */
   useEffect(() => {
-    document.body.style.overflow = activeProject ? 'hidden' : ''
-  }, [activeProject])
+    document.body.style.overflow = (activeProject || menuOpen) ? 'hidden' : ''
+  }, [activeProject, menuOpen])
 
   const scrollTo = id => {
     document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: 'smooth' })
@@ -263,6 +263,12 @@ export default function App() {
             <span className="logo-bracket">&lt;</span>KA<span className="logo-bracket">/&gt;</span>
           </div>
 
+          <div
+            className={`nav-backdrop ${menuOpen ? 'open' : ''}`}
+            onClick={() => setMenuOpen(false)}
+            aria-hidden="true"
+          />
+
           <ul className={`nav-links ${menuOpen ? 'open' : ''}`} role="menubar">
             {NAV_LINKS.map(link => (
               <li key={link} role="none">
@@ -280,7 +286,7 @@ export default function App() {
           </ul>
 
           <button
-            className="hamburger"
+            className={`hamburger ${menuOpen ? 'open' : ''}`}
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(m => !m)}
