@@ -1,467 +1,757 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import profilePic from './assets/Me.png'
 import avatarImg from './assets/avatar.jpg'
+import mrsBakersImg from './assets/projects/mrs-bakers.jpg'
+import itbytesImg from './assets/projects/itbytes.png'
+import vawcareImg from './assets/projects/vawcare.png'
 import {
   LinkedinOutlined,
   GithubOutlined,
   InstagramOutlined,
   MailOutlined,
   CloseOutlined,
+  ArrowRightOutlined,
+  CheckOutlined,
+  CopyOutlined,
+  GlobalOutlined,
+  CalendarOutlined,
+  RocketOutlined,
+  CodeOutlined,
+  SafetyCertificateOutlined,
+  CompassOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons'
 
-/* ─── Data ─── */
-const NAV_LINKS = ['Home', 'About', 'Skills', 'Projects', 'Experience', 'Contact']
+/* ─── Static Data ─── */
+const NAV_LINKS = ['Home', 'About', 'Projects', 'Skills', 'Experience', 'Contact']
+
+const TECH_MARQUEE = [
+  'React 19',
+  'Node.js',
+  'JavaScript ES6+',
+  'Express.js',
+  'Vite',
+  'MongoDB',
+  'MySQL',
+  'Google Workspace Admin',
+  'Odoo ERP',
+  'Tailwind CSS',
+  'REST APIs',
+  'Linux Ubuntu',
+  'Git & GitHub',
+  'Progressive Web Apps',
+  'Postman',
+  'Mockoon',
+]
 
 const TECH_STACK = {
   Frontend: [
-    { name: 'JavaScript', level: 90 },
-    { name: 'React', level: 88 },
-    { name: 'HTML', level: 95 },
-    { name: 'CSS', level: 90 },
-    { name: 'JSX', level: 88 },
-    { name: 'Vite', level: 80 },
-    { name: 'Material UI', level: 75 },
-    { name: 'Tailwind CSS', level: 80 },
+    { name: 'JavaScript', level: 90, tag: 'Core' },
+    { name: 'React 19', level: 88, tag: 'Framework' },
+    { name: 'HTML5 & Semantic UI', level: 95, tag: 'Standard' },
+    { name: 'Modern CSS & Flex/Grid', level: 90, tag: 'Styling' },
+    { name: 'JSX & Component Design', level: 88, tag: 'Architecture' },
+    { name: 'Vite', level: 80, tag: 'Build Tool' },
+    { name: 'Tailwind CSS', level: 80, tag: 'Utility' },
+    { name: 'Material UI', level: 75, tag: 'Design System' },
   ],
   Backend: [
-    { name: 'Node.js', level: 85 },
-    { name: 'Express', level: 82 },
-    { name: 'Python', level: 78 },
-    { name: 'Java', level: 75 },
-    { name: 'C#', level: 72 },
-    { name: '.NET', level: 70 },
-    { name: 'REST APIs', level: 88 },
+    { name: 'Node.js', level: 85, tag: 'Runtime' },
+    { name: 'Express.js', level: 82, tag: 'API Framework' },
+    { name: 'REST APIs & Webhooks', level: 88, tag: 'Architecture' },
+    { name: 'Python', level: 78, tag: 'General' },
+    { name: 'Java', level: 75, tag: 'OOP' },
+    { name: 'C# & .NET', level: 72, tag: 'Enterprise' },
   ],
   Databases: [
-    { name: 'MongoDB', level: 80 },
-    { name: 'MySQL', level: 85 },
-    { name: 'MariaDB', level: 78 },
-    { name: 'Firebase', level: 75 },
+    { name: 'MongoDB', level: 80, tag: 'NoSQL' },
+    { name: 'MySQL', level: 85, tag: 'Relational' },
+    { name: 'MariaDB', level: 78, tag: 'SQL' },
+    { name: 'Firebase Firestore', level: 75, tag: 'Realtime' },
   ],
-  'DevOps / Cloud': [
-    { name: 'Ubuntu', level: 70 },
-    { name: 'Bash', level: 68 },
-    { name: 'Azure', level: 65 },
-    { name: 'GitHub', level: 90 },
-    { name: 'Git', level: 90 },
-    { name: 'RabbitMQ', level: 60 },
-    { name: 'WordPress', level: 72 },
+  'DevOps / Systems': [
+    { name: 'Google Workspace Admin', level: 88, tag: 'Enterprise' },
+    { name: 'Odoo ERP Administration', level: 85, tag: 'ERP' },
+    { name: 'Linux Ubuntu & Bash', level: 70, tag: 'OS' },
+    { name: 'Git & Version Control', level: 90, tag: 'Workflow' },
+    { name: 'Azure Cloud Fundamentals', level: 65, tag: 'Cloud' },
+    { name: 'RabbitMQ', level: 60, tag: 'Messaging' },
   ],
   Tools: [
-    { name: 'VS Code', level: 95 },
-    { name: 'Postman', level: 90 },
-    { name: 'Mockoon (API Mock Testing)', level: 88 },
-    { name: 'Odoo ERP (Admin)', level: 85 },
-    { name: 'Google Admin Console', level: 88 },
-    { name: 'Visual Studio', level: 80 },
-    { name: 'Android Studio', level: 70 },
-    { name: 'Eclipse', level: 70 },
+    { name: 'VS Code', level: 95, tag: 'Primary IDE' },
+    { name: 'Postman', level: 90, tag: 'API Testing' },
+    { name: 'Mockoon', level: 88, tag: 'Mock Server' },
+    { name: 'Jira & Agile Workflows', level: 85, tag: 'Management' },
+    { name: 'Visual Studio & Android Studio', level: 75, tag: 'IDE' },
   ],
 }
 
 const PROJECTS = [
   {
-    title: "Mrs. Bakers",
-    description: "A web application for Mrs. Bakers Restaurant and Pastry Shop.",
+    id: 'mrs-bakers',
+    title: 'Mrs. Bakers',
+    category: 'Web App',
+    year: '2026',
+    role: 'Full-Stack Developer',
+    description: 'A comprehensive web application engineered for Mrs. Bakers Restaurant and Pastry Shop.',
     longDescription:
-      "A full-featured restaurant web application built for Mrs. Bakers Restaurant and Pastry Shop. Features include menu browsing, online ordering, reservation management, and an admin dashboard for managing orders and inventory.",
-    tags: ["React", "Node.js", "MongoDB", "Express"],
-    link: "https://github.com/KKAnanayo/SofEng-Final-Project",
-    github: "https://github.com/KKAnanayo/SofEng-Final-Project",
-    type: "Web App",
-    emoji: "🍰",
+      'A full-featured restaurant web application built for Mrs. Bakers Restaurant and Pastry Shop. Features dynamic online menu browsing, seamless customer ordering, automated reservation handling, and a protected administrative dashboard for managing real-time inventory and incoming orders.',
+    tags: ['React', 'Node.js', 'MongoDB', 'Express', 'REST API'],
+    link: 'https://github.com/KKAnanayo/SofEng-Final-Project',
+    github: 'https://github.com/KKAnanayo/SofEng-Final-Project',
+    metrics: 'Online ordering · Inventory Admin · Reservations',
+    color: 'from-amber-500/20 to-purple-600/20',
+    image: mrsBakersImg,
   },
   {
-    title: "ITBYTES",
-    description: "An ecommerce web application for ITBytes, a business that sells computers and CCTV systems.",
+    id: 'itbytes',
+    title: 'ITBYTES',
+    category: 'E-Commerce',
+    year: '2026',
+    role: 'Full-Stack Developer',
+    description: 'Full-scale e-commerce web platform for ITBytes computer and CCTV security systems.',
     longDescription:
-      "A comprehensive e-commerce platform for ITBytes, specializing in computers and CCTV security systems. Includes product catalog, shopping cart, secure checkout, user authentication, and full admin product management.",
-    tags: ["PHP", "MySQL", "JavaScript", "HTML/CSS"],
-    link: "https://itbytes.dreos.qzz.io/",
+      'A robust commercial e-commerce solution engineered for ITBytes, catering to commercial hardware, enterprise computing gear, and CCTV security installations. Includes real-time catalog filtering, dynamic shopping cart, authenticated customer portal, and comprehensive inventory management.',
+    tags: ['PHP', 'MySQL', 'JavaScript', 'HTML/CSS', 'Responsive'],
+    link: 'https://itbytes.dreos.qzz.io/',
     github: null,
-    type: "E-Commerce",
-    emoji: "🖥️",
+    metrics: 'Live Production · Cart & Checkout · Catalog Filter',
+    color: 'from-cyan-500/20 to-blue-600/20',
+    image: itbytesImg,
   },
   {
-    title: "VAWCARE",
-    description: "A PWA to support barangay-level efforts in preventing and responding to VAWC cases.",
+    id: 'vawcare',
+    title: 'VAWCARE',
+    category: 'PWA',
+    year: '2026',
+    role: 'Frontend / PWA Engineer',
+    description: 'Progressive Web Application empowering community barangay-level VAWC protection.',
     longDescription:
-      "A Progressive Web Application (PWA) designed to support barangay-level efforts in preventing and responding to Violence Against Women and Children (VAWC) cases. Features case management, incident reporting, resource directories, and real-time notifications to empower local government units.",
-    tags: ["React", "Firebase", "PWA", "Vite"],
-    link: "https://vawcare-app.vercel.app/",
+      'A high-reliability Progressive Web Application (PWA) designed specifically to support local barangay-level efforts in preventing, documenting, and responding to Violence Against Women and Children (VAWC) incidents. Built with offline capability, encrypted reporting, real-time alert dispatch, and community support directories.',
+    tags: ['React', 'Firebase', 'PWA', 'Vite', 'Service Worker'],
+    link: 'https://vawcare-app.vercel.app/',
     github: null,
-    type: "PWA",
-    emoji: "🛡️",
+    metrics: 'Offline Support · Realtime Alerts · Case Tracking',
+    color: 'from-emerald-500/20 to-indigo-600/20',
+    image: vawcareImg,
   },
 ]
 
 const EXPERIENCE = [
   {
-    period: 'June 2026 – September 2026 · 4 Months',
+    period: 'June 2026 – September 2026',
+    duration: '4 Months',
     badge: 'Contract of Service',
     title: 'COS IT Staff',
-    company: "Saint Mary's University — Bayombong, Nueva Vizcaya (Region II)",
+    company: "Saint Mary's University",
+    location: 'Bayombong, Nueva Vizcaya (Region II), PH',
     description:
-      "Appointed as Contract of Service (COS) IT Staff at Saint Mary's University following a successful practicum. Primary responsibilities focused on Google Workspace administration (managing institutional & corporate email accounts, domain user provisioning, and authentication support), Odoo ERP system administration, and operating digital ID card production and student credential encoding systems. Provided dedicated tier-1 & tier-2 helpdesk support to faculty and students, resolving portal access issues, institutional account inquiries, and university online services.",
-    tags: [
-      'Google Workspace Admin',
-      'Odoo ERP Admin',
-      'Corporate Email Admin',
-      'Digital ID Production',
-      'Student Account Management',
-      'User Support & Helpdesk',
+      "Appointed as Contract of Service (COS) IT Staff at Saint Mary's University following a high-performing practicum. Spearheaded institutional Google Workspace administration (corporate email domain, user provisioning, SSO authentication), Odoo ERP administration, and operated digital ID production with smart student credential encoding. Provided tier-1 and tier-2 helpdesk support for faculty and student portal systems.",
+    highlights: [
+      'Google Workspace Admin & Domain Provisioning',
+      'Odoo ERP Institutional Operations',
+      'Digital Student ID Card Encoding Systems',
+      'Tier-1 & Tier-2 End-User Technical Helpdesk',
     ],
   },
   {
-    period: 'March 2026 – June 2026 · 4 Months',
+    period: 'March 2026 – June 2026',
+    duration: '4 Months',
     badge: 'Practicum / OJT',
     title: 'IT Practicum Trainee (OJT)',
-    company: "Saint Mary's University — Bayombong, Nueva Vizcaya (Region II)",
+    company: "Saint Mary's University",
+    location: 'Bayombong, Nueva Vizcaya (Region II), PH',
     description:
-      "Completed an intensive 4-month practicum at Saint Mary's University focused on core IT infrastructure and technical operations. Gained hands-on skills in structured cabling, fiber optic splicing, CCTV setup & installation, wireless networking, and front-line end-user IT support across campus facilities. Built a well-rounded foundation that enhances adaptability across software development, technical support, and network infrastructure roles.",
-    tags: ['Structured Cabling', 'Fiber Optic Splicing', 'CCTV Installation', 'Wireless Networking', 'IT Support', 'Infrastructure'],
+      'Completed an intensive 4-month technical practicum focused on mission-critical IT infrastructure across campus facilities. Gained end-to-end expertise in structured fiber optic splicing, Cat6 structured cabling, CCTV network design and setup, high-density enterprise wireless deployment, and on-site hardware troubleshooting.',
+    highlights: [
+      'Fiber Optic Splicing & Structured Cabling',
+      'Campus-wide CCTV Security Network Setup',
+      'Enterprise Wireless Access Point Deployment',
+      'Hardware Diagnostics & Hardware Troubleshooting',
+    ],
   },
 ]
 
 const SOCIAL_LINKS = [
-  { name: 'LinkedIn',  url: 'https://linkedin.com',            icon: <LinkedinOutlined />,  color: '#0077b5' },
-  { name: 'GitHub',    url: 'https://github.com/KKAnanayo',    icon: <GithubOutlined />,    color: '#6e40c9' },
-  { name: 'Instagram', url: 'https://instagram.com',           icon: <InstagramOutlined />, color: '#e1306c' },
-  { name: 'Email',     url: 'mailto:jadenyuki486@gmail.com',   icon: <MailOutlined />,      color: '#ea4335' },
+  { name: 'LinkedIn', url: 'https://linkedin.com', icon: <LinkedinOutlined /> },
+  { name: 'GitHub', url: 'https://github.com/KKAnanayo', icon: <GithubOutlined /> },
+  { name: 'Instagram', url: 'https://instagram.com', icon: <InstagramOutlined /> },
+  { name: 'Email', url: 'mailto:ananayokevinklein@gmail.com', icon: <MailOutlined /> },
 ]
 
-const STATS = [
-  { value: '8 Mos',  label: 'Hands-on IT Experience', icon: '💼' },
-  { value: '3+',     label: 'Featured Projects',      icon: '🎯' },
-  { value: '25+',    label: 'Technologies & Tools',    icon: '💻' },
-  { value: '100%',   label: 'Adaptability & Drive',   icon: '⚡' },
-]
-
-const TYPING_TEXTS = [
+const HERO_ROLES = [
+  'Full-Stack Developer',
   'Software Engineer',
-  'Full Stack Developer',
   'IT Infrastructure Specialist',
-  'React & Node.js Developer',
-  'Problem Solver',
+  'React & Node.js Builder',
 ]
 
-/* ─── Custom Hook: Typing Effect ─── */
-function useTyping(texts, speed = 100, deleteSpeed = 55, pause = 1600) {
-  const [display, setDisplay]       = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [textIdx, setTextIdx]       = useState(0)
-  const [charIdx, setCharIdx]       = useState(0)
-
-  useEffect(() => {
-    const current = texts[textIdx]
-    let timer
-
-    if (!isDeleting && charIdx <= current.length) {
-      timer = setTimeout(() => {
-        setDisplay(current.slice(0, charIdx))
-        setCharIdx(c => c + 1)
-      }, speed)
-    } else if (!isDeleting && charIdx > current.length) {
-      timer = setTimeout(() => setIsDeleting(true), pause)
-    } else if (isDeleting && charIdx > 0) {
-      timer = setTimeout(() => {
-        setDisplay(current.slice(0, charIdx - 1))
-        setCharIdx(c => c - 1)
-      }, deleteSpeed)
-    } else {
-      setIsDeleting(false)
-      setTextIdx(i => (i + 1) % texts.length)
-    }
-
-    return () => clearTimeout(timer)
-  }, [charIdx, isDeleting, textIdx, texts, speed, deleteSpeed, pause])
-
-  return display
-}
-
-/* ─── Custom Hook: Scroll Reveal ─── */
-function useScrollReveal() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }),
-      { threshold: 0.12 }
-    )
-    const els = document.querySelectorAll('.animate-on-scroll')
-    els.forEach(el => observer.observe(el))
-    return () => observer.disconnect()
-  }, [])
-}
-
-/* ─── Main App ─── */
+/* ─── Main Component ─── */
 export default function App() {
-  const [activeNav,      setActiveNav]      = useState('Home')
-  const [activeSkillTab, setActiveSkillTab] = useState('Frontend')
-  const [activeProject,  setActiveProject]  = useState(null)
-  const [menuOpen,       setMenuOpen]       = useState(false)
+  const [activeNav, setActiveNav] = useState('Home')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [activeSkillCategory, setActiveSkillCategory] = useState('Frontend')
+  const [activeProjectFilter, setActiveProjectFilter] = useState('All')
+  const [activeModalProject, setActiveModalProject] = useState(null)
+  const [roleIndex, setRoleIndex] = useState(0)
+  const [copiedEmail, setCopiedEmail] = useState(false)
+  const [currentTime, setCurrentTime] = useState('')
 
-  const typingText = useTyping(TYPING_TEXTS)
-  useScrollReveal()
+  /* Cycling headline roles */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRoleIndex(prev => (prev + 1) % HERO_ROLES.length)
+    }, 2800)
+    return () => clearInterval(timer)
+  }, [])
 
-  /* Active section via IntersectionObserver */
+  /* Philippines Digital Clock (GMT+8) */
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      const options = {
+        timeZone: 'Asia/Manila',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      }
+      setCurrentTime(new Intl.DateTimeFormat('en-US', options).format(now))
+    }
+    updateTime()
+    const timer = setInterval(updateTime, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /* High-Performance Spotlight Mouse Tracking (zero React re-renders & rAF-throttled) */
+  useEffect(() => {
+    let ticking = false
+    const handleMouseMove = e => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const card = e.target.closest('.bento-spotlight')
+          if (card) {
+            const rect = card.getBoundingClientRect()
+            card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`)
+            card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`)
+          }
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  /* Scroll Observer for Active Nav */
   useEffect(() => {
     const sections = document.querySelectorAll('section[id]')
     const observer = new IntersectionObserver(
       entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            const id = e.target.id
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id
             setActiveNav(id.charAt(0).toUpperCase() + id.slice(1))
           }
         })
       },
-      { threshold: 0.45 }
+      { threshold: 0.35 }
     )
     sections.forEach(s => observer.observe(s))
     return () => observer.disconnect()
   }, [])
 
-  /* Close modal on Escape key */
+  /* Butter-Smooth Scroll Reveal Observer */
   useEffect(() => {
-    const handler = e => { if (e.key === 'Escape') setActiveProject(null) }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible')
+            observer.unobserve(e.target)
+          }
+        })
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
+    )
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el))
+    return () => observer.disconnect()
   }, [])
 
-  /* Lock body scroll when modal or mobile menu is open */
+  /* Lock body scroll when modal or mobile menu is active */
   useEffect(() => {
-    document.body.style.overflow = (activeProject || menuOpen) ? 'hidden' : ''
-  }, [activeProject, menuOpen])
+    document.body.style.overflow = activeModalProject || menuOpen ? 'hidden' : ''
+  }, [activeModalProject, menuOpen])
 
   const scrollTo = id => {
-    document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: 'smooth' })
+    const el = document.getElementById(id.toLowerCase())
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
     setMenuOpen(false)
   }
 
-  const handleContactSubmit = e => {
-    e.preventDefault()
-    const d = new FormData(e.target)
-    const subject = encodeURIComponent(d.get('subject') || '')
-    const body    = encodeURIComponent(`From: ${d.get('name')}\n\n${d.get('message')}`)
-    window.location.href = `mailto:jadenyuki486@gmail.com?subject=${subject}&body=${body}`
+  const copyEmailToClipboard = () => {
+    navigator.clipboard.writeText('ananayokevinklein@gmail.com')
+    setCopiedEmail(true)
+    setTimeout(() => setCopiedEmail(false), 2400)
   }
 
-  return (
-    <div className="portfolio">
+  const filteredProjects =
+    activeProjectFilter === 'All'
+      ? PROJECTS
+      : PROJECTS.filter(p => p.category === activeProjectFilter)
 
-      {/* ── Animated background orbs ── */}
-      <div className="bg-orbs" aria-hidden="true">
-        <div className="orb orb-1" />
-        <div className="orb orb-2" />
-        <div className="orb orb-3" />
+  return (
+    <div className="portfolio-app">
+      {/* ── Ambient Radial Background Lights ── */}
+      <div className="ambient-background" aria-hidden="true">
+        <div className="ambient-light light-1" />
+        <div className="ambient-light light-2" />
+        <div className="ambient-light light-3" />
+        <div className="ambient-noise-grid" />
       </div>
 
-      {/* ────────────── NAVBAR ────────────── */}
-      <nav className="navbar" role="navigation" aria-label="Main navigation">
-        <div className="nav-inner">
+      {/* ────────────── FLOATING CAPSULE NAVBAR ────────────── */}
+      <header className="navbar-container">
+        <nav className="floating-navbar" role="navigation" aria-label="Main Navigation">
+          {/* Brandmark */}
           <div
-            className="nav-logo"
+            className="brand-pill"
             onClick={() => scrollTo('home')}
             role="button"
             tabIndex={0}
-            aria-label="Kevin Ananayo — Return to home"
             onKeyDown={e => e.key === 'Enter' && scrollTo('home')}
           >
-            <div className="logo-avatar-wrap">
-              <img src={avatarImg} alt="Kevin Ananayo" className="logo-avatar-img" />
-              <span className="logo-status-dot" title="Available for work" aria-hidden="true" />
+            <div className="brand-avatar-box">
+              <img src={avatarImg} alt="Kevin Ananayo" className="brand-avatar" />
+              <span className="live-status-dot" title="Available for hire" />
             </div>
-            <div className="logo-text">
-              <span className="logo-name">Kevin</span>
-              <span className="logo-dot">.</span>
-              <span className="logo-dev">dev</span>
+            <div className="brand-label">
+              <span className="brand-name">Kevin</span>
+              <span className="brand-dot">.</span>
+              <span className="brand-dev">dev</span>
             </div>
           </div>
 
-          <div
-            className={`nav-backdrop ${menuOpen ? 'open' : ''}`}
-            onClick={() => setMenuOpen(false)}
-            aria-hidden="true"
-          />
-
-          <ul className={`nav-links ${menuOpen ? 'open' : ''}`} role="menubar">
-            {NAV_LINKS.map(link => (
-              <li key={link} role="none">
+          {/* Desktop Nav Links */}
+          <ul className="desktop-nav-links" role="menubar">
+            {NAV_LINKS.map(item => (
+              <li key={item} role="none">
                 <button
-                  id={`nav-${link.toLowerCase()}`}
-                  className={`nav-link ${activeNav === link ? 'active' : ''}`}
+                  className={`nav-capsule-link ${activeNav === item ? 'is-active' : ''}`}
+                  onClick={() => scrollTo(item)}
                   role="menuitem"
-                  aria-current={activeNav === link ? 'page' : undefined}
-                  onClick={() => scrollTo(link)}
                 >
-                  {link}
+                  {item}
+                  {activeNav === item && <span className="nav-active-pill" />}
                 </button>
               </li>
             ))}
           </ul>
 
-          <button
-            className={`hamburger ${menuOpen ? 'open' : ''}`}
-            aria-label="Toggle navigation menu"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(m => !m)}
-          >
-            <span /><span /><span />
-          </button>
+          {/* Right Action: Let's Talk Magnetic CTA */}
+          <div className="nav-action-wrapper">
+            <button
+              className="btn-talk"
+              onClick={() => scrollTo('contact')}
+              aria-label="Contact Kevin"
+            >
+              <span>Let's Talk</span>
+              <ArrowRightOutlined className="btn-talk-arrow" />
+            </button>
+
+            {/* Hamburger Button */}
+            <button
+              className={`hamburger-btn ${menuOpen ? 'is-open' : ''}`}
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle navigation drawer"
+            >
+              <span />
+              <span />
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Slide-down Drawer */}
+        <div className={`mobile-nav-drawer ${menuOpen ? 'is-open' : ''}`}>
+          <div className="mobile-drawer-header">
+            <div className="brand-pill" onClick={() => scrollTo('home')}>
+              <img src={avatarImg} alt="Kevin" className="brand-avatar-sm" />
+              <span className="brand-name">Kevin.dev</span>
+            </div>
+            <button className="mobile-close-btn" onClick={() => setMenuOpen(false)}>
+              <CloseOutlined />
+            </button>
+          </div>
+          <div className="mobile-nav-list">
+            {NAV_LINKS.map((link, idx) => (
+              <button
+                key={link}
+                className={`mobile-nav-item ${activeNav === link ? 'is-active' : ''}`}
+                onClick={() => scrollTo(link)}
+                style={{ animationDelay: `${idx * 0.05}s` }}
+              >
+                <span>{link}</span>
+                <ArrowRightOutlined className="mobile-item-arrow" />
+              </button>
+            ))}
+          </div>
+          <div className="mobile-drawer-footer">
+            <button className="btn-full-primary" onClick={() => scrollTo('contact')}>
+              Let's Build Something Together ↗
+            </button>
+          </div>
         </div>
-      </nav>
+      </header>
 
-      {/* ────────────── HERO ────────────── */}
-      <section id="home" className="hero-section" aria-label="Introduction">
-        <div className="hero-content">
-          <div className="hero-text animate-on-scroll">
-            <p className="hero-greeting">👋 Hello, I'm</p>
-            <h1 className="hero-name">Kevin Klein Ananayo</h1>
+      {/* ────────────── HERO SECTION (PLAINTHING MOTION STYLE) ────────────── */}
+      <section id="home" className="hero-section">
+        <div className="hero-container">
+          {/* Top Availability Capsule */}
+          <div className="hero-badge-row reveal-on-scroll">
+            <div className="availability-capsule">
+              <span className="beacon-dot" />
+              <span className="capsule-text">Available for Opportunities & Projects</span>
+            </div>
+            <div className="location-capsule">
+              <CompassOutlined className="capsule-icon" />
+              <span>Nueva Vizcaya, PH</span>
+            </div>
+          </div>
 
-            <div className="hero-title-wrapper" aria-live="polite" aria-atomic="true">
-              <span className="hero-title">{typingText}</span>
-              <span className="cursor" aria-hidden="true">|</span>
+          {/* Bold Editorial Headline */}
+          <div className="hero-headline-block reveal-on-scroll">
+            <h1 className="hero-main-title">
+              Crafting digital products with{' '}
+              <span className="highlight-text-gradient">fluid precision</span>
+              <br className="hero-br" />
+              & scalable architecture.
+            </h1>
+
+            {/* Dynamic Role Badge */}
+            <div className="role-cycler-container">
+              <span className="role-prefix">Specialized in</span>
+              <div className="role-capsule-flipper" key={roleIndex}>
+                <span className="role-flipper-text">{HERO_ROLES[roleIndex]}</span>
+              </div>
             </div>
 
-            <p className="hero-subtitle">
-              A results-driven Full-Stack Developer & IT Specialist with practical experience in
-              web application development and IT infrastructure operations. Based in Bayombong, Nueva Vizcaya (Region II), Philippines 📍
+            <p className="hero-description">
+              Hello, I'm <strong className="text-white">Kevin Klein Ananayo</strong>. A results-driven{' '}
+              <span className="text-highlight">Full-Stack Developer</span> and{' '}
+              <span className="text-highlight">IT Infrastructure Specialist</span> combining modern web
+              technologies (React 19, Node.js, Vite) with 8 months of institutional IT administration and network infrastructure operations.
             </p>
 
-            <div className="hero-buttons">
+            {/* Hero CTA Cluster */}
+            <div className="hero-actions-cluster">
+              <button className="hero-btn-primary" onClick={() => scrollTo('projects')}>
+                <span>View Selected Works</span>
+                <ArrowRightOutlined className="action-arrow" />
+              </button>
+
+              <button className="hero-btn-secondary" onClick={copyEmailToClipboard}>
+                {copiedEmail ? <CheckOutlined className="text-emerald" /> : <CopyOutlined />}
+                <span>{copiedEmail ? 'Email Copied!' : 'Copy Email'}</span>
+              </button>
+
               <a
-                id="hero-schedule-btn"
                 href="https://calendly.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-primary"
+                className="hero-btn-ghost"
               >
-                📅 Schedule a Meeting
+                <CalendarOutlined />
+                <span>Schedule a Call</span>
               </a>
-              <a
-                id="hero-email-btn"
-                href="mailto:jadenyuki486@gmail.com"
-                className="btn btn-secondary"
-              >
-                ✉️ Send Email
-              </a>
-              <button
-                id="hero-projects-btn"
-                className="btn btn-outline"
-                onClick={() => scrollTo('projects')}
-              >
-                🎯 View Projects
-              </button>
             </div>
           </div>
 
-          <div className="hero-avatar animate-on-scroll">
-            <div className="avatar-ring">
-              <div className="avatar-ring-2" aria-hidden="true" />
-              <img
-                src={profilePic}
-                alt="Kevin Klein Ananayo — Software Engineer"
-                className="profile-image"
-              />
+          {/* Plainthing Style Hero Interactive Showcase Card */}
+          <div className="hero-showcase-wrapper reveal-on-scroll">
+            <div className="hero-bento-card bento-spotlight">
+              <div className="showcase-card-inner">
+                {/* Visual Media Showcase */}
+                <div className="showcase-media-box">
+                  <div className="showcase-glow-ring" />
+                  <img
+                    src={profilePic}
+                    alt="Kevin Klein Ananayo — Professional Portrait"
+                    className="showcase-avatar-img"
+                  />
+                </div>
+
+                {/* Floating Interactive Micro Badges */}
+                <div className="floating-badge badge-top-left">
+                  <span className="badge-emoji">⚡</span>
+                  <div>
+                    <div className="badge-title">8+ Months</div>
+                    <div className="badge-subtitle">IT Infrastructure</div>
+                  </div>
+                </div>
+
+                <div className="floating-badge badge-top-right">
+                  <span className="badge-emoji">🎓</span>
+                  <div>
+                    <div className="badge-title">Saint Mary's</div>
+                    <div className="badge-subtitle">COS IT Staff</div>
+                  </div>
+                </div>
+
+                <div className="floating-badge badge-bottom-left">
+                  <span className="badge-emoji">💻</span>
+                  <div>
+                    <div className="badge-title">React 19 & Node</div>
+                    <div className="badge-subtitle">Full-Stack Architecture</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div
-          className="scroll-indicator"
-          onClick={() => scrollTo('about')}
-          role="button"
-          tabIndex={0}
-          aria-label="Scroll to About section"
-          onKeyDown={e => e.key === 'Enter' && scrollTo('about')}
-        >
-          <div className="scroll-dot" aria-hidden="true" />
-          <span>Scroll Down</span>
+        {/* Infinite Tech Marquee Strip */}
+        <div className="tech-marquee-wrapper" aria-hidden="true">
+          <div className="tech-marquee-track">
+            {TECH_MARQUEE.concat(TECH_MARQUEE).map((tech, idx) => (
+              <span key={idx} className="marquee-item">
+                <span className="marquee-dot">✦</span>
+                {tech}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ────────────── ABOUT ────────────── */}
-      <section id="about" className="section-wrapper" aria-labelledby="about-heading">
-        <div className="section-container">
-          <h2 id="about-heading" className="section-heading animate-on-scroll">
-            <span className="heading-accent">About</span> Me
+      {/* ────────────── BENTO ABOUT & IDENTITY SECTION ────────────── */}
+      <section id="about" className="section-container">
+        <div className="section-header reveal-on-scroll">
+          <span className="section-label">Identity & Story</span>
+          <h2 className="section-title">
+            The intersection of <span className="highlight-text-gradient">software</span> & enterprise infrastructure.
           </h2>
+        </div>
 
-          <div className="about-grid">
-            <div className="about-text animate-on-scroll">
-              <p className="section-text">
-                A results-driven Full-Stack Developer with hands-on experience in both{' '}
-                <strong>Rapid Application Development (RAD)</strong> and{' '}
-                <strong>Agile</strong> methodologies. Proficient in modern tools such as{' '}
-                <strong>Mockoon</strong> for API mock testing, <strong>Postman</strong>, <strong>Jira</strong> for project tracking, and <strong>Notion</strong> for documentation.
-              </p>
-              <p className="section-text">
-                Adept at building scalable, resilient web applications using{' '}
-                <strong>React</strong>, <strong>Node.js</strong>, <strong>JSX</strong>, and{' '}
-                <strong>Vite</strong>. Possesses <strong>8 months of hands-on IT experience</strong> combining practical infrastructure training (structured cabling, fiber optics, CCTV, and wireless networks) with institutional system administration (Google Workspace, Odoo ERP, student account helpdesk, and digital ID systems).
-              </p>
-              <p className="section-text">
-                Highly adaptable to diverse roles across <strong>software engineering, full-stack development, technical support, and IT infrastructure</strong>. Outside of tech, I maintain focus and discipline through regular gym workouts. 🏋️
-              </p>
+        {/* Bento Grid */}
+        <div className="bento-grid">
+          {/* Card 1: Main Story (2 Columns) */}
+          <div className="bento-card bento-story bento-spotlight reveal-on-scroll">
+            <div className="card-header-icon">
+              <RocketOutlined />
+            </div>
+            <h3 className="bento-card-title">Building Resilient, Scalable Solutions</h3>
+            <p className="bento-text">
+              I am a results-oriented developer experienced in both{' '}
+              <strong className="text-white">Rapid Application Development (RAD)</strong> and{' '}
+              <strong className="text-white">Agile</strong> workflows. My approach unites modern frontend
+              engineering with robust backend APIs, verified through strict testing standards using tools like{' '}
+              <strong className="text-white">Mockoon</strong> and <strong className="text-white">Postman</strong>.
+            </p>
+            <p className="bento-text">
+              What sets my journey apart is <strong className="text-white">8 months of hands-on IT operations</strong> at Saint Mary's University. From running Google Workspace institutional provisioning and Odoo ERP administration, to splicing fiber optics and deploying campus-wide CCTV security networks—I understand technology from both the code and the physical infrastructure layers.
+            </p>
+            <div className="story-pill-tags">
+              <span className="story-tag">Full-Stack Web</span>
+              <span className="story-tag">Cloud & Systems</span>
+              <span className="story-tag">Institutional ERP</span>
+              <span className="story-tag">Network Operations</span>
+            </div>
+          </div>
+
+          {/* Card 2: Interactive Location & Live Digital Clock */}
+          <div className="bento-card bento-time bento-spotlight reveal-on-scroll">
+            <div className="time-card-content">
+              <div className="time-header">
+                <CompassOutlined className="time-icon" />
+                <span className="time-zone-label">Based in Philippines (GMT+8)</span>
+              </div>
+              <div className="digital-clock-display">
+                <ClockCircleOutlined className="clock-pulse" />
+                <span className="clock-numbers">{currentTime || '12:00:00 PM'}</span>
+              </div>
+              <div className="time-footer-location">
+                <span className="location-flag">📍</span>
+                <span>Bayombong, Nueva Vizcaya</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Key Stats */}
+          <div className="bento-card bento-stats bento-spotlight reveal-on-scroll">
+            <div className="stats-inner-grid">
+              <div className="stat-unit">
+                <div className="stat-large-num">8+</div>
+                <div className="stat-unit-label">Months Experience</div>
+              </div>
+              <div className="stat-unit">
+                <div className="stat-large-num">3+</div>
+                <div className="stat-unit-label">Shipped Projects</div>
+              </div>
+              <div className="stat-unit">
+                <div className="stat-large-num">25+</div>
+                <div className="stat-unit-label">Tools & Frameworks</div>
+              </div>
+              <div className="stat-unit">
+                <div className="stat-large-num">100%</div>
+                <div className="stat-unit-label">Adaptability & Drive</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Core Capabilities */}
+          <div className="bento-card bento-disciplines bento-spotlight reveal-on-scroll">
+            <h4 className="disciplines-header">What I Bring to Teams</h4>
+            <div className="disciplines-list">
+              <div className="discipline-item">
+                <CodeOutlined className="discipline-icon icon-indigo" />
+                <div>
+                  <div className="discipline-name">Web Engineering</div>
+                  <div className="discipline-desc">React 19, Node.js, Express, REST APIs, Vite</div>
+                </div>
+              </div>
+              <div className="discipline-item">
+                <SafetyCertificateOutlined className="discipline-icon icon-cyan" />
+                <div>
+                  <div className="discipline-name">Systems Administration</div>
+                  <div className="discipline-desc">Google Workspace Admin, Odoo ERP, Digital Credentials</div>
+                </div>
+              </div>
+              <div className="discipline-item">
+                <CompassOutlined className="discipline-icon icon-teal" />
+                <div>
+                  <div className="discipline-name">IT Infrastructure</div>
+                  <div className="discipline-desc">Fiber Optics, CCTV Security, Linux, Structured Cabling</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ────────────── FEATURED PROJECTS (CASE STUDIES) ────────────── */}
+      <section id="projects" className="section-container">
+        <div className="section-header reveal-on-scroll">
+          <div className="projects-header-flex">
+            <div>
+              <span className="section-label">Selected Case Studies</span>
+              <h2 className="section-title">
+                Handcrafted <span className="highlight-text-gradient">products</span> & applications.
+              </h2>
             </div>
 
-            <div className="stats-grid animate-on-scroll">
-              {STATS.map((stat, i) => (
-                <div key={i} className="stat-card" role="figure" aria-label={`${stat.value} ${stat.label}`}>
-                  <div className="stat-icon" aria-hidden="true">{stat.icon}</div>
-                  <div className="stat-value">{stat.value}</div>
-                  <div className="stat-label">{stat.label}</div>
-                </div>
+            {/* Filter Pills */}
+            <div className="project-filter-pills" role="tablist">
+              {['All', 'Web App', 'E-Commerce', 'PWA'].map(cat => (
+                <button
+                  key={cat}
+                  className={`filter-pill ${activeProjectFilter === cat ? 'is-active' : ''}`}
+                  onClick={() => setActiveProjectFilter(cat)}
+                  role="tab"
+                  aria-selected={activeProjectFilter === cat}
+                >
+                  {cat}
+                </button>
               ))}
             </div>
           </div>
         </div>
+
+        {/* Project Cards Grid */}
+        <div className="projects-grid">
+          {filteredProjects.map((project, idx) => (
+            <article
+              key={project.id}
+              className="project-bento-card bento-spotlight reveal-on-scroll"
+              style={{ animationDelay: `${idx * 0.1}s` }}
+              onClick={() => setActiveModalProject(project)}
+            >
+              {/* Top Banner / Mockup Area */}
+              <div className="project-banner-box">
+                <div className="project-banner-media">
+                  <img
+                    src={project.image}
+                    alt={`${project.title} logo`}
+                    className="project-banner-img"
+                  />
+                </div>
+                <div className="project-category-badge">{project.category}</div>
+                <span className="project-year-badge">{project.year}</span>
+              </div>
+
+              {/* Card Body */}
+              <div className="project-card-body">
+                <div className="project-title-row">
+                  <h3 className="project-card-heading">{project.title}</h3>
+                  <div className="project-link-arrow-box" title="View Details">
+                    <ArrowRightOutlined className="project-arrow-icon" />
+                  </div>
+                </div>
+
+                <p className="project-card-desc">{project.description}</p>
+
+                {/* Tech Tags */}
+                <div className="project-tech-pills">
+                  {project.tags.map(tag => (
+                    <span key={tag} className="tech-badge">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Bottom Metrics Bar */}
+                <div className="project-card-footer">
+                  <span className="project-metric-text">✦ {project.metrics}</span>
+                  <span className="project-explore-hint">Explore Case Study ↗</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
-      {/* ────────────── SKILLS ────────────── */}
-      <section id="skills" className="section-wrapper section-dark" aria-labelledby="skills-heading">
-        <div className="section-container">
-          <h2 id="skills-heading" className="section-heading animate-on-scroll">
-            <span className="heading-accent">Tech</span> Stack & Tools
+      {/* ────────────── SKILLS & TECH STACK ────────────── */}
+      <section id="skills" className="section-container">
+        <div className="section-header reveal-on-scroll">
+          <span className="section-label">Technical Matrix</span>
+          <h2 className="section-title">
+            Technologies, tools & <span className="highlight-text-gradient">stack</span>.
           </h2>
-          <p className="section-subtitle animate-on-scroll">Technologies and developer tools I work with</p>
+        </div>
 
+        <div className="skills-bento-layout">
           {/* Category Tabs */}
-          <div className="skill-tabs animate-on-scroll" role="tablist" aria-label="Skill categories">
-            {Object.keys(TECH_STACK).map(tab => (
+          <div className="skills-category-tabs reveal-on-scroll" role="tablist">
+            {Object.keys(TECH_STACK).map(cat => (
               <button
-                key={tab}
-                id={`tab-${tab.replace(/\s/g, '-').toLowerCase()}`}
-                className={`skill-tab ${activeSkillTab === tab ? 'active' : ''}`}
+                key={cat}
+                className={`skills-tab-button ${activeSkillCategory === cat ? 'is-active' : ''}`}
+                onClick={() => setActiveSkillCategory(cat)}
                 role="tab"
-                aria-selected={activeSkillTab === tab}
-                aria-controls="skills-panel"
-                onClick={() => setActiveSkillTab(tab)}
               >
-                {tab}
+                {cat}
               </button>
             ))}
           </div>
 
           {/* Skills Grid */}
-          <div
-            id="skills-panel"
-            className="skills-grid animate-on-scroll"
-            role="tabpanel"
-            aria-labelledby={`tab-${activeSkillTab.replace(/\s/g, '-').toLowerCase()}`}
-          >
-            {TECH_STACK[activeSkillTab].map((skill, i) => (
-              <div
-                key={skill.name}
-                className="skill-item"
-                style={{ animationDelay: `${i * 0.04}s` }}
-              >
-                <div className="skill-header">
-                  <span className="skill-name">{skill.name}</span>
-                  <span className="skill-percent">{skill.level}%</span>
+          <div className="skills-matrix-grid reveal-on-scroll">
+            {TECH_STACK[activeSkillCategory].map(skill => (
+              <div key={skill.name} className="skill-matrix-item bento-spotlight">
+                <div className="skill-info-row">
+                  <div>
+                    <span className="skill-title-name">{skill.name}</span>
+                    <span className="skill-discipline-tag">{skill.tag}</span>
+                  </div>
+                  <span className="skill-percentage">{skill.level}%</span>
                 </div>
-                <div className="skill-bar" role="progressbar" aria-valuenow={skill.level} aria-valuemin={0} aria-valuemax={100}>
-                  <div className="skill-fill" style={{ '--skill-width': `${skill.level}%` }} />
+                <div className="skill-meter-track">
+                  <div
+                    className="skill-meter-fill"
+                    style={{ width: `${skill.level}%` }}
+                  />
                 </div>
               </div>
             ))}
@@ -469,272 +759,210 @@ export default function App() {
         </div>
       </section>
 
-      {/* ────────────── PROJECTS ────────────── */}
-      <section id="projects" className="section-wrapper" aria-labelledby="projects-heading">
-        <div className="section-container">
-          <h2 id="projects-heading" className="section-heading animate-on-scroll">
-            <span className="heading-accent">Recent</span> Projects
+      {/* ────────────── WORK EXPERIENCE TIMELINE ────────────── */}
+      <section id="experience" className="section-container">
+        <div className="section-header reveal-on-scroll">
+          <span className="section-label">Professional Background</span>
+          <h2 className="section-title">
+            Proven track record in <span className="highlight-text-gradient">IT operations</span> & infrastructure.
           </h2>
-          <p className="section-subtitle animate-on-scroll">Click on any project to explore full details</p>
+        </div>
 
-          <div className="projects-grid" role="list">
-            {PROJECTS.map((project, i) => (
-              <article
-                key={i}
-                className="project-card animate-on-scroll"
-                style={{ animationDelay: `${i * 0.1}s` }}
-                onClick={() => setActiveProject(project)}
-                role="listitem button"
-                tabIndex={0}
-                aria-label={`View details for ${project.title}`}
-                onKeyDown={e => e.key === 'Enter' && setActiveProject(project)}
-              >
-                <div className="project-emoji" aria-hidden="true">{project.emoji}</div>
-                <span className="project-type-badge">{project.type}</span>
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-desc">{project.description}</p>
-                <div className="project-tags" aria-label="Technologies used">
-                  {project.tags.map(tag => (
-                    <span key={tag} className="project-tag">{tag}</span>
+        <div className="experience-timeline-container">
+          {EXPERIENCE.map((exp, idx) => (
+            <div key={idx} className="timeline-block reveal-on-scroll">
+              <div className="timeline-connector">
+                <div className="timeline-bullet-ring">
+                  <div className="timeline-bullet-center" />
+                </div>
+                {idx !== EXPERIENCE.length - 1 && <div className="timeline-stem" />}
+              </div>
+
+              <div className="timeline-card bento-spotlight">
+                <div className="timeline-top-meta">
+                  <span className="timeline-contract-pill">{exp.badge}</span>
+                  <span className="timeline-period-text">
+                    <CalendarOutlined className="mr-1" /> {exp.period} · {exp.duration}
+                  </span>
+                </div>
+
+                <h3 className="timeline-role-title">{exp.title}</h3>
+                <div className="timeline-company-row">
+                  <span className="company-name">🏢 {exp.company}</span>
+                  <span className="company-location">📍 {exp.location}</span>
+                </div>
+
+                <p className="timeline-narrative">{exp.description}</p>
+
+                <div className="timeline-highlights-list">
+                  {exp.highlights.map((item, hIdx) => (
+                    <div key={hIdx} className="highlight-chip">
+                      <CheckOutlined className="chip-check" />
+                      <span>{item}</span>
+                    </div>
                   ))}
                 </div>
-                <div className="project-card-footer">
-                  <span className="project-open-hint">Click to explore →</span>
-                </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ────────────── EXPERIENCE ────────────── */}
-      <section id="experience" className="section-wrapper section-dark" aria-labelledby="experience-heading">
-        <div className="section-container">
-          <h2 id="experience-heading" className="section-heading animate-on-scroll">
-            <span className="heading-accent">Work</span> Experience
-          </h2>
-          <p className="section-subtitle animate-on-scroll">
-            Hands-on professional background in IT operations and infrastructure
-          </p>
+      {/* ────────────── CONTACT & LET'S TALK BANNER ────────────── */}
+      <section id="contact" className="section-container">
+        <div className="contact-callout-card bento-spotlight reveal-on-scroll">
+          <div className="callout-content-wrapper">
+            <span className="callout-pill">Ready for Collaboration</span>
+            <h2 className="callout-main-headline">
+              Let's create something <span className="highlight-text-gradient">remarkable</span> together.
+            </h2>
+            <p className="callout-subtext">
+              Whether you have an ambitious web project, need a reliable Full-Stack engineer, or wish to explore technical consulting—my inbox is always open.
+            </p>
 
-          {EXPERIENCE.length === 0 ? (
-            <div className="empty-experience animate-on-scroll">
-              <div className="empty-icon" aria-hidden="true">🚀</div>
-              <h3>Building My Journey</h3>
-              <p>
-                Currently seeking opportunities to make an impact.
-                Open to full-time roles and freelance projects!
-              </p>
-              <a
-                id="experience-contact-btn"
-                href="mailto:jadenyuki486@gmail.com"
-                className="btn btn-primary"
+            {/* Magnetic Email Copy Box */}
+            <div className="email-action-capsule">
+              <span className="email-label">ananayokevinklein@gmail.com</span>
+              <button
+                className="btn-copy-capsule"
+                onClick={copyEmailToClipboard}
+                title="Copy email to clipboard"
               >
-                Get in Touch
-              </a>
+                {copiedEmail ? (
+                  <>
+                    <CheckOutlined className="text-emerald" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <CopyOutlined />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
             </div>
-          ) : (
-            <div className="timeline">
-              {EXPERIENCE.map((exp, i) => (
-                <div
-                  key={i}
-                  className={`timeline-item animate-on-scroll ${i % 2 === 0 ? 'left' : 'right'}`}
-                >
-                  <div className="timeline-content">
-                    <div className="timeline-header-row">
-                      <span className="timeline-badge">{exp.badge}</span>
-                      <span className="timeline-date">{exp.period}</span>
-                    </div>
-                    <h3 className="timeline-title">{exp.title}</h3>
-                    <p className="timeline-company">🏢 {exp.company}</p>
-                    <p className="timeline-desc">{exp.description}</p>
-                    {exp.tags && (
-                      <div className="timeline-tags">
-                        {exp.tags.map(tag => (
-                          <span key={tag} className="project-tag">{tag}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="timeline-dot" aria-hidden="true" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
 
-      {/* ────────────── CONTACT ────────────── */}
-      <section id="contact" className="section-wrapper" aria-labelledby="contact-heading">
-        <div className="section-container">
-          <h2 id="contact-heading" className="section-heading animate-on-scroll">
-            Let's <span className="heading-accent">Connect</span>
-          </h2>
-          <p className="section-subtitle animate-on-scroll">
-            Feel free to reach out for career opportunities, collaborations, or technical inquiries!
-          </p>
-
-          <div className="contact-grid">
-            {/* Social Cards */}
-            <div className="social-cards animate-on-scroll" role="list" aria-label="Social links">
-              {SOCIAL_LINKS.map(link => (
+            {/* Social Link Badges */}
+            <div className="social-capsules-row">
+              {SOCIAL_LINKS.map(s => (
                 <a
-                  key={link.name}
-                  id={`social-${link.name.toLowerCase()}`}
-                  href={link.url}
-                  target={link.url.startsWith('mailto') ? undefined : '_blank'}
+                  key={s.name}
+                  href={s.url}
+                  target={s.url.startsWith('mailto') ? undefined : '_blank'}
                   rel="noopener noreferrer"
-                  className="social-card"
-                  style={{ '--social-color': link.color }}
-                  role="listitem"
-                  aria-label={`Visit my ${link.name}`}
+                  className="social-dock-pill"
                 >
-                  <span className="social-icon" aria-hidden="true">{link.icon}</span>
-                  <span className="social-name">{link.name}</span>
+                  <span className="social-dock-icon">{s.icon}</span>
+                  <span>{s.name}</span>
                 </a>
               ))}
             </div>
-
-            {/* Contact Form */}
-            <form
-              id="contact-form"
-              className="contact-form animate-on-scroll"
-              onSubmit={handleContactSubmit}
-              aria-label="Contact form"
-              noValidate
-            >
-              <h3 className="form-title">Send a Message</h3>
-
-              <div className="form-group">
-                <label htmlFor="contact-name" className="sr-only">Your Name</label>
-                <input
-                  id="contact-name"
-                  type="text"
-                  name="name"
-                  placeholder="Your Name"
-                  required
-                  className="form-input"
-                  autoComplete="name"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="contact-subject" className="sr-only">Subject</label>
-                <input
-                  id="contact-subject"
-                  type="text"
-                  name="subject"
-                  placeholder="Subject"
-                  required
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="contact-message" className="sr-only">Message</label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  placeholder="Your Message"
-                  rows={5}
-                  required
-                  className="form-input"
-                />
-              </div>
-
-              <button id="contact-submit-btn" type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                ✉️ Send Message
-              </button>
-            </form>
           </div>
         </div>
       </section>
 
       {/* ────────────── FOOTER ────────────── */}
-      <footer className="footer" role="contentinfo">
-        <div className="footer-inner">
-          <div
-            className="nav-logo footer-logo"
-            onClick={() => scrollTo('home')}
-            role="button"
-            tabIndex={0}
-            aria-label="Kevin Ananayo — Scroll to top"
-            onKeyDown={e => e.key === 'Enter' && scrollTo('home')}
-          >
-            <div className="logo-avatar-wrap">
-              <img src={avatarImg} alt="Kevin Ananayo" className="logo-avatar-img" />
-              <span className="logo-status-dot" aria-hidden="true" />
+      <footer className="footer-container">
+        <div className="footer-inner-content">
+          <div className="footer-left-brand">
+            <div className="brand-pill" onClick={() => scrollTo('home')}>
+              <img src={avatarImg} alt="Kevin Ananayo" className="brand-avatar-sm" />
+              <span className="brand-name">Kevin.dev</span>
             </div>
-            <div className="logo-text">
-              <span className="logo-name">Kevin</span>
-              <span className="logo-dot">.</span>
-              <span className="logo-dev">dev</span>
-            </div>
+            <p className="footer-bio-note">
+              Designed & developed with precision. Blending software craft with enterprise IT operations.
+            </p>
           </div>
-          <p>© {new Date().getFullYear()} Kevin Klein Ananayo. All rights reserved.</p>
-          <p className="footer-sub">Software Engineer · Full Stack Developer · IT Infrastructure</p>
+
+          <div className="footer-right-info">
+            <button className="footer-back-top" onClick={() => scrollTo('home')}>
+              Back to Top ↑
+            </button>
+            <p className="copyright-text">
+              © {new Date().getFullYear()} Kevin Klein Ananayo. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
 
-      {/* ────────────── PROJECT MODAL ────────────── */}
-      {activeProject && (
+      {/* ────────────── PROJECT CASE STUDY MODAL ────────────── */}
+      {activeModalProject && (
         <div
-          className="modal-overlay"
+          className="modal-backdrop-blur"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="modal-title"
-          onClick={() => setActiveProject(null)}
+          onClick={() => setActiveModalProject(null)}
         >
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div className="modal-dialog-box bento-spotlight" onClick={e => e.stopPropagation()}>
             <button
-              className="modal-close"
-              aria-label="Close project details"
-              onClick={() => setActiveProject(null)}
+              className="modal-close-trigger"
+              onClick={() => setActiveModalProject(null)}
+              aria-label="Close modal"
             >
-              <CloseOutlined aria-hidden="true" />
+              <CloseOutlined />
             </button>
 
-            <div className="modal-emoji" aria-hidden="true">{activeProject.emoji}</div>
-            <span className="project-type-badge">{activeProject.type}</span>
-            <h2 id="modal-title" className="modal-title">{activeProject.title}</h2>
-            <p className="modal-desc">{activeProject.longDescription}</p>
-
-            <div className="modal-tags" aria-label="Technologies used">
-              {activeProject.tags.map(tag => (
-                <span key={tag} className="project-tag">{tag}</span>
-              ))}
+            <div className="modal-header-banner">
+              <div className="modal-image-avatar">
+                <img
+                  src={activeModalProject.image}
+                  alt={`${activeModalProject.title} logo`}
+                  className="modal-banner-img"
+                />
+              </div>
+              <div>
+                <span className="modal-category-tag">{activeModalProject.category} · {activeModalProject.year}</span>
+                <h3 className="modal-project-title">{activeModalProject.title}</h3>
+                <div className="modal-role-meta">Role: {activeModalProject.role}</div>
+              </div>
             </div>
 
-            <div className="modal-actions">
-              {activeProject.link && (
-                <a
-                  href={activeProject.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary"
-                  aria-label={`Open live demo of ${activeProject.title}`}
-                >
-                  🌐 Live Demo
-                </a>
-              )}
-              {activeProject.github && (
-                <a
-                  href={activeProject.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-secondary"
-                  aria-label={`View ${activeProject.title} on GitHub`}
-                >
-                  <GithubOutlined aria-hidden="true" /> GitHub
-                </a>
-              )}
+            <div className="modal-body-content">
+              <h4 className="modal-section-h4">Project Overview</h4>
+              <p className="modal-long-desc">{activeModalProject.longDescription}</p>
+
+              <h4 className="modal-section-h4">Core Features & Architecture</h4>
+              <div className="modal-metrics-card">
+                <span className="modal-metrics-highlight">{activeModalProject.metrics}</span>
+              </div>
+
+              <h4 className="modal-section-h4">Technologies Used</h4>
+              <div className="modal-tags-container">
+                {activeModalProject.tags.map(t => (
+                  <span key={t} className="modal-tech-tag">
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              <div className="modal-cta-actions">
+                {activeModalProject.link && (
+                  <a
+                    href={activeModalProject.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="modal-btn-primary"
+                  >
+                    <GlobalOutlined />
+                    <span>Launch Live Demo</span>
+                  </a>
+                )}
+                {activeModalProject.github && (
+                  <a
+                    href={activeModalProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="modal-btn-secondary"
+                  >
+                    <GithubOutlined />
+                    <span>View Source on GitHub</span>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
       )}
-
-      {/* Screen-reader-only utility */}
-      <style>{`.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}`}</style>
     </div>
   )
 }
