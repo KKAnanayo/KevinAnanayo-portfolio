@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import profilePic from './assets/Me.png'
+import avatarImg from './assets/avatar.jpg'
 import {
   LinkedinOutlined,
   GithubOutlined,
@@ -258,9 +259,23 @@ export default function App() {
       {/* ────────────── NAVBAR ────────────── */}
       <nav className="navbar" role="navigation" aria-label="Main navigation">
         <div className="nav-inner">
-          <div className="nav-logo" onClick={() => scrollTo('home')} role="button" tabIndex={0}
-               onKeyDown={e => e.key === 'Enter' && scrollTo('home')}>
-            <span className="logo-bracket">&lt;</span>KA<span className="logo-bracket">/&gt;</span>
+          <div
+            className="nav-logo"
+            onClick={() => scrollTo('home')}
+            role="button"
+            tabIndex={0}
+            aria-label="Kevin Ananayo — Return to home"
+            onKeyDown={e => e.key === 'Enter' && scrollTo('home')}
+          >
+            <div className="logo-avatar-wrap">
+              <img src={avatarImg} alt="Kevin Ananayo" className="logo-avatar-img" />
+              <span className="logo-status-dot" title="Available for work" aria-hidden="true" />
+            </div>
+            <div className="logo-text">
+              <span className="logo-name">Kevin</span>
+              <span className="logo-dot">.</span>
+              <span className="logo-dev">dev</span>
+            </div>
           </div>
 
           <div
@@ -638,8 +653,23 @@ export default function App() {
       {/* ────────────── FOOTER ────────────── */}
       <footer className="footer" role="contentinfo">
         <div className="footer-inner">
-          <div className="nav-logo">
-            <span className="logo-bracket">&lt;</span>KA<span className="logo-bracket">/&gt;</span>
+          <div
+            className="nav-logo footer-logo"
+            onClick={() => scrollTo('home')}
+            role="button"
+            tabIndex={0}
+            aria-label="Kevin Ananayo — Scroll to top"
+            onKeyDown={e => e.key === 'Enter' && scrollTo('home')}
+          >
+            <div className="logo-avatar-wrap">
+              <img src={avatarImg} alt="Kevin Ananayo" className="logo-avatar-img" />
+              <span className="logo-status-dot" aria-hidden="true" />
+            </div>
+            <div className="logo-text">
+              <span className="logo-name">Kevin</span>
+              <span className="logo-dot">.</span>
+              <span className="logo-dev">dev</span>
+            </div>
           </div>
           <p>© {new Date().getFullYear()} Kevin Klein Ananayo. All rights reserved.</p>
           <p className="footer-sub">Software Engineer · Full Stack Developer · IT Infrastructure</p>
