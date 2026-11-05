@@ -1122,7 +1122,7 @@
   justify-content: center;
   border-bottom: 1px solid var(--border-subtle);
   overflow: hidden;
-  padding: 1.5rem;
+  padding: 2.75rem 1.25rem 1.25rem;
 }
 
 .project-banner-media {
@@ -1132,12 +1132,12 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 .project-banner-img {
-  max-width: 140px;
-  max-height: 125px;
+  max-width: 130px;
+  max-height: 110px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -1153,25 +1153,29 @@
 
 .project-category-badge {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  top: 0.85rem;
+  left: 0.85rem;
   padding: 0.3rem 0.75rem;
-  background: rgba(14, 16, 25, 0.85);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 12, 20, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 600;
   color: #ffffff;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .project-year-badge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.85rem;
+  right: 0.85rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-dim);
+  z-index: 10;
 }
 
 .project-card-body {
@@ -1921,5 +1925,30 @@
 
   .projects-grid {
     grid-template-columns: 1fr;
+  }
+
+  .project-banner-box {
+    height: 175px;
+    padding: 2.5rem 1rem 1rem;
+  }
+
+  .project-banner-img {
+    max-width: 105px;
+    max-height: 95px;
+  }
+
+  .project-category-badge {
+    top: 0.65rem;
+    left: 0.65rem;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.7rem;
+    z-index: 10;
+  }
+
+  .project-year-badge {
+    top: 0.65rem;
+    right: 0.65rem;
+    font-size: 0.7rem;
+    z-index: 10;
   }
 }
